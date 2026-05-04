@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Общуване на животните</title>
+  <style>
+    :root{
+      --green:#2e7d32;
+      --green2:#43a047;
+      --light:#f1f8e9;
+      --light2:#f9fff5;
+      --accent:#8bc34a;
+      --brown:#6d4c41;
+      --white:#ffffff;
+      --danger:#c62828;
+      --ok:#1b5e20;
+      --shadow:0 10px 28px rgba(0,0,0,.12);
+      --border:#c5e1a5;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Arial, Helvetica, sans-serif;
+      background:linear-gradient(180deg,#e8f5e9 0%,#f7fff6 100%);
+      color:#1f2d1f;
+    }
+    .wrap{
+      max-width:1100px;
+      margin:0 auto;
+      padding:24px;
+    }
+    .hero{
+      background:linear-gradient(135deg,#66bb6a 0%, #c5e1a5 100%);
+      color:#173618;
+      border-radius:24px;
+      padding:24px;
+      box-shadow:var(--shadow);
+      margin-bottom:20px;
+    }
+    h1,h2,h3{margin-top:0}
+    .subtitle{line-height:1.6;margin:0}
+    .layout{
+      display:grid;
+      grid-template-columns:1.2fr .8fr;
+      gap:18px;
+    }
+    @media (max-width:900px){
+      .layout{grid-template-columns:1fr}
+    }
+    .panel{
+      background:var(--white);
+      border-radius:20px;
+      padding:20px;
+      box-shadow:var(--shadow);
+      margin-bottom:18px;
+    }
+    .badges{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:12px;
+    }
+    .badge{
+      padding:10px 14px;
+      border-radius:999px;
+      background:#f1f8e9;
+      border:2px solid var(--border);
+      font-weight:bold;
+    }
+    .garden{
+      display:grid;
+      grid-template-columns:repeat(5,1fr);
+      gap:10px;
+    }
+    @media (max-width:650px){
+      .garden{grid-template-columns:repeat(3,1fr)}
+    }
+    .step{
+      min-height:78px;
+      border-radius:16px;
+      border:2px dashed var(--border);
+      background:var(--light2);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      padding:8px;
+      font-size:.95rem;
+    }
+    .step.done{
+      background:#dcedc8;
+      border-style:solid;
+      border-color:#7cb342;
+      font-weight:bold;
+    }
+    .questionBox{
+      background:#fcfff8;
+      border:2px solid #dcedc8;
+      border-radius:18px;
+      padding:18px;
+      min-height:250px;
+    }
+    .meta{
+      color:var(--green);
+      font-weight:bold;
+      margin-bottom:8px;
+    }
+    .qtext{
+      font-size:1.18rem;
+      line-height:1.55;
+      margin-bottom:14px;
+    }
+    .typeTag{
+      display:inline-block;
+      font-size:.9rem;
+      padding:6px 10px;
+      border-radius:999px;
+      background:#eef7e7;
+      border:1px solid var(--border);
+      margin-bottom:10px;
+    }
+    .options{display:grid;gap:10px}
+    .option{
+      width:100%;
+      text-align:left;
+      border:2px solid #c8e6c9;
+      background:white;
+      padding:12px 14px;
+      border-radius:12px;
+      cursor:pointer;
+      font-size:1rem;
+      transition:.2s;
+    }
+    .option:hover{border-color:#81c784;transform:translateY(-1px)}
+    .option.selected{background:#f1f8e9;border-color:#66bb6a}
+    .option.correct{background:#e8f5e9;border-color:#43a047}
+    .option.wrong{background:#ffebee;border-color:#e53935}
+    .feedback{
+      display:none;
+      margin-top:14px;
+      padding:12px 14px;
+      border-radius:12px;
+      line-height:1.5;
+    }
+    .feedback.show{display:block}
+    .feedback.ok{background:#e8f5e9;color:var(--ok)}
+    .feedback.bad{background:#ffebee;color:var(--danger)}
+    .controls{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:16px;
+    }
+    button{
+      border:none;
+      border-radius:12px;
+      padding:12px 16px;
+      font-size:1rem;
+      cursor:pointer;
+    }
+    .mainBtn{background:var(--green);color:white}
+    .mainBtn:hover{background:#256b2a}
+    .secBtn{background:white;color:var(--green);border:2px solid var(--border)}
+    .inputText, select{
+      width:100%;
+      padding:12px 14px;
+      font-size:1rem;
+      border-radius:12px;
+      border:2px solid #dcedc8;
+      margin:8px 0;
+      background:white;
+    }
+    .smallNote{font-size:.95rem;color:#486148}
+    .pairRow, .groupRow{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+      align-items:center;
+      margin-bottom:10px;
+    }
+    .groupRow{
+      grid-template-columns:1.2fr 1fr;
+    }
+    .pairLabel, .groupLabel{
+      background:#f6fbef;
+      padding:12px;
+      border-radius:12px;
+      border:1px solid #dcedc8;
+    }
+    .orderingList{
+      display:grid;
+      gap:10px;
+      margin-bottom:12px;
+    }
+    .orderItem{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      background:white;
+      border:2px solid #dcedc8;
+      border-radius:12px;
+      padding:10px;
+    }
+    .orderNum{
+      min-width:36px;
+      height:36px;
+      border-radius:50%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:#eef7e7;
+      font-weight:bold;
+    }
+    .moveBtn{
+      padding:8px 10px;
+      border-radius:10px;
+      background:#f1f8e9;
+      border:1px solid #c5e1a5;
+      cursor:pointer;
+    }
+    .result{
+      text-align:center;
+      padding:24px;
+      display:none;
+    }
+    .scoreBig{
+      font-size:2rem;
+      color:var(--green);
+      font-weight:bold;
+      margin:12px 0;
+    }
+    .hidden{display:none}
+    .legend li{margin-bottom:8px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="hero">
+      <h1>🌿 Общуване на животните</h1>
+      <p class="subtitle">
+        Интерактивна образователна игра за 6. клас по текста <strong>„Как разговарят животните?“</strong>.
+        Играта съдържа <strong>15 въпроса</strong> с различни типове задачи: избор, свързване, подреждане, групиране и кратък отговор.
+      </p>
+      <div class="badges">
+        <div class="badge">🌱 Растителна тематика</div>
+        <div class="badge">📝 15 задачи</div>
+        <div class="badge">🎯 Автоматично оценяване</div>
+      </div>
+    </div>
+
+    <div class="layout">
+      <div>
+        <div class="panel">
+          <h2>Как се играе</h2>
+          <ul class="legend">
+            <li>Всеки верен отговор ти носи <strong>1 точка</strong>.</li>
+            <li>При всяка вярна задача „отглеждаш“ част от своето растение.</li>
+            <li>Накрая ще видиш крайния резултат и оценка на представянето.</li>
+          </ul>
+        </div>
+
+        <div class="panel">
+          <div id="questionBox" class="questionBox">
+            <div class="meta" id="meta"></div>
+            <div class="typeTag" id="typeTag"></div>
+            <div class="qtext" id="qtext"></div>
+            <div id="answerArea"></div>
+            <div id="feedback" class="feedback"></div>
+            <div class="controls">
+              <button class="mainBtn" id="checkBtn">Провери</button>
+              <button class="secBtn hidden" id="nextBtn">Следващ въпрос</button>
+              <button class="secBtn" id="restartBtn">Започни отначало</button>
+            </div>
+          </div>
+
+          <div id="result" class="result panel">
+            <h2>🌸 Твоята градина разцъфна!</h2>
+            <div class="scoreBig" id="finalScore"></div>
+            <p id="finalText"></p>
+            <button class="mainBtn" onclick="restartGame()">Играй отново</button>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="panel">
+          <h2>Моето растение</h2>
+          <div class="badges">
+            <div class="badge">Точки: <span id="score">0</span> / 15</div>
+            <div class="badge">Въпрос: <span id="current">1</span> / 15</div>
+          </div>
+          <div class="garden" id="garden">
+            <div class="step">1. Семенце</div>
+            <div class="step">2. Коренче</div>
+            <div class="step">3. Стъбло</div>
+            <div class="step">4. Листа</div>
+            <div class="step">5. Пъпка</div>
+            <div class="step">6. Капка роса</div>
+            <div class="step">7. Листа</div>
+            <div class="step">8. Клонче</div>
+            <div class="step">9. Цвят</div>
+            <div class="step">10. Листа</div>
+            <div class="step">11. Плодче</div>
+            <div class="step">12. Семка</div>
+            <div class="step">13. Цвят</div>
+            <div class="step">14. Венчелистче</div>
+            <div class="step">15. Разцъфнало растение</div>
+          </div>
+          <p class="smallNote">При всеки верен отговор една клетка се отбелязва като завършена.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const questions = [
+      {
+        type: "text",
+        tag: "Кратък отговор",
+        q: "Коя е темата на научния текст?",
+        acceptable: [
+          "общуването при животните",
+          "начините, по които животните общуват",
+          "как разговарят животните",
+          "общуването на животните"
+        ],
+        feedback: "Темата е общуването при животните и начините, по които те си предават информация."
+      },
+      {
+        type: "multi",
+        tag: "Избери няколко верни отговора",
+        q: "Открий новите понятия и непознатите думи в текста. (Верни отговори: 4)",
+        options: ["феромони", "потомство", "краб цигулар", "круша", "велосипед", "ухажване"],
+        correct: [0,1,2,5],
+        feedback: "Подходящи нови понятия са: феромони, потомство, краб цигулар, ухажване."
+      },
+      {
+        type: "group",
+        tag: "Групиране",
+        q: "Групирай организмите от текста на безгръбначни и гръбначни животни.",
+        items: [
+          {label:"светулки", correct:"Безгръбначни"},
+          {label:"краб цигулар", correct:"Безгръбначни"},
+          {label:"копринена пеперуда", correct:"Безгръбначни"},
+          {label:"китове", correct:"Гръбначни"},
+          {label:"гущери", correct:"Гръбначни"},
+          {label:"котки", correct:"Гръбначни"}
+        ],
+        groups:["Безгръбначни","Гръбначни"],
+        feedback:"Безгръбначни: светулки, краб цигулар, копринена пеперуда. Гръбначни: китове, гущери, котки."
+      },
+      {
+        type: "choice",
+        tag: "Избор",
+        q: "Коя система от органи е отговорна за общуването на организмите?",
+        options: ["Храносмилателната система", "Нервната система", "Половата система", "Опорно-двигателната система"],
+        correct: 1,
+        feedback: "Нервната система приема, обработва и предава сигнали."
+      },
+      {
+        type: "choice",
+        tag: "Избор",
+        q: "Кои организми в текста имат тръбесто сърце?",
+        options: [
+          "Птиците, китовете и маймуните",
+          "Светулките, крабът цигулар и копринената пеперуда",
+          "Кучетата, котките и гущерите",
+          "Само китовете"
+        ],
+        correct: 1,
+        feedback: "Тръбесто сърце имат безгръбначни като насекоми и някои други членестоноги, споменати в текста."
+      },
+      {
+        type: "choice",
+        tag: "Избор",
+        q: "Защо животните общуват помежду си?",
+        options: [
+          "За да играят",
+          "За да оцелеят и да отгледат потомство",
+          "За да станат по-големи",
+          "За да променят цвета си"
+        ],
+        correct: 1,
+        feedback: "В текста ясно е посочено, че общуването помага за оцеляване и отглеждане на потомство."
+      },
+      {
+        type: "match",
+        tag: "Свързване",
+        q: "Свържи животното с начина му на общуване.",
+        pairs: [
+          {left:"гущери", right:"поклащане на глава"},
+          {left:"светулки", right:"светлинни сигнали"},
+          {left:"копринена пеперуда", right:"феромони"},
+          {left:"краб цигулар", right:"размахване на щипка"}
+        ],
+        rights: [
+          "светлинни сигнали",
+          "размахване на щипка",
+          "феромони",
+          "поклащане на глава"
+        ],
+        feedback: "Това са четири различни начина за общуване, описани в текста."
+      },
+      {
+        type: "choice",
+        tag: "Избор",
+        q: "Кои животни в текста общуват чрез звуци?",
+        options: [
+          "Птиците, китовете и маймуните",
+          "Светулките и крабовете",
+          "Котките и пеперудите",
+          "Само гущерите"
+        ],
+        correct: 0,
+        feedback: "Птиците, китовете и маймуните издават разнообразни звуци с определено значение."
+      },
+      {
+        type: "choice",
+        tag: "Избор",
+        q: "Как кучетата и котките показват сигнали?",
+        options: [
+          "Като сменят цвета си",
+          "Като променят положението на ушите си",
+          "Като мигат със светлина",
+          "Като размахват щипка"
+        ],
+        correct: 1,
+        feedback: "Положението на ушите е важен сигнал за настроение и поведение."
+      },
+      {
+        type: "ordering",
+        tag: "Подреждане",
+        q: "Подреди етапите в правилна последователност според смисъла на текста при копринената пеперуда.",
+        items: [
+          "намира партньор",
+          "усеща феромоните",
+          "снася яйца",
+          "живее само няколко дни"
+        ],
+        correctOrder: [
+          "живее само няколко дни",
+          "усеща феромоните",
+          "намира партньор",
+          "снася яйца"
+        ],
+        feedback: "Възрастните пеперуди живеят кратко, затова бързо откриват партньор чрез феромони и снасят яйца."
+      },
+      {
+        type: "multi",
+        tag: "Избери няколко верни отговора",
+        q: "Нервната система се състои от:",
+        options: [
+          "Гръбначен мозък",
+          "Главен мозък",
+          "Нерви",
+          "Мускули"
+        ],
+        correct: [0,1,2],
+        feedback: "Нервната система се състои от главен мозък, гръбначен мозък и нерви."
+      },
+      {
+        type: "multi",
+        tag: "Избери няколко верни отговора",
+        q: "Копринената пеперуда има:",
+        options: [
+          "Пряко развитие",
+          "Непряко развитие",
+          "Пълна метаморфоза",
+          "Непълна метаморфоза"
+        ],
+        correct: [1,2],
+        feedback: "Копринената пеперуда има непряко развитие и пълна метаморфоза."
+      },
+      {
+        type: "choice",
+        tag: "Избор",
+        q: "Каква особеност има мъжкият краб цигулар?",
+        options: [
+          "Има две еднакви малки щипки",
+          "Едната му предна щипка е по-дълга и ярко оцветена",
+          "Няма щипки",
+          "Издава песен"
+        ],
+        correct: 1,
+        feedback: "Тази ярко оцветена щипка служи за привличане на женските."
+      },
+      {
+        type: "choice",
+        tag: "Избор",
+        q: "Защо мъжкият краб цигулар размахва щипката си?",
+        options: [
+          "За да изплаши китовете",
+          "За да привлече вниманието на женските",
+          "За да си копае дупка",
+          "За да показва, че е гладен"
+        ],
+        correct: 1,
+        feedback: "Размахването е сигнал при ухажване."
+      },
+      {
+        type: "text",
+        tag: "Кратък отговор",
+        q: "Кои са основните начини за общуване на животните, описани в текста?",
+        acceptable: [
+          "чрез звуци движения светлина и миризми",
+          "звуци движения светлина и миризми",
+          "чрез звуци, движения, светлина и миризми",
+          "звуци, движения, светлина и миризми"
+        ],
+        feedback: "В текста са описани четири основни начина: звуци, движения, светлина и миризми."
+      }
+    ];
+
+    let current = 0;
+    let score = 0;
+    let answered = false;
+
+    const meta = document.getElementById('meta');
+    const typeTag = document.getElementById('typeTag');
+    const qtext = document.getElementById('qtext');
+    const answerArea = document.getElementById('answerArea');
+    const feedback = document.getElementById('feedback');
+    const checkBtn = document.getElementById('checkBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const restartBtn = document.getElementById('restartBtn');
+    const scoreEl = document.getElementById('score');
+    const currentEl = document.getElementById('current');
+    const gardenSteps = document.querySelectorAll('.step');
+    const questionBox = document.getElementById('questionBox');
+    const resultBox = document.getElementById('result');
+
+    function normalize(str){
+      return str
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g,'')
+        .replace(/[.,!?;:()"]/g,'')
+        .replace(/\s+/g,' ')
+        .trim();
+    }
+
+    function renderQuestion(){
+      answered = false;
+      feedback.className = 'feedback';
+      feedback.textContent = '';
+      nextBtn.classList.add('hidden');
+
+      if(current >= questions.length){
+        showResult();
+        return;
+      }
+
+      const q = questions[current];
+      meta.textContent = `Въпрос ${current + 1} от ${questions.length}`;
+      typeTag.textContent = q.tag;
+      qtext.textContent = q.q;
+      currentEl.textContent = current + 1;
+      answerArea.innerHTML = '';
+
+      if(q.type === 'choice'){
+        const wrap = document.createElement('div');
+        wrap.className = 'options';
+        q.options.forEach((opt, i) => {
+          const btn = document.createElement('button');
+          btn.className = 'option';
+          btn.textContent = opt;
+          btn.type = 'button';
+          btn.onclick = () => {
+            document.querySelectorAll('.option').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            btn.dataset.selected = i;
+          };
+          wrap.appendChild(btn);
+        });
+        answerArea.appendChild(wrap);
+      }
+
+      if(q.type === 'multi'){
+        const wrap = document.createElement('div');
+        wrap.className = 'options';
+        q.options.forEach((opt, i) => {
+          const btn = document.createElement('button');
+          btn.className = 'option';
+          btn.textContent = opt;
+          btn.type = 'button';
+          btn.onclick = () => btn.classList.toggle('selected');
+          btn.dataset.index = i;
+          wrap.appendChild(btn);
+        });
+        answerArea.appendChild(wrap);
+        const note = document.createElement('div');
+        note.className = 'smallNote';
+        note.textContent = 'Избери всички верни отговори. Брой верни отговори: ' + q.correct.length + '.';
+        answerArea.appendChild(note);
+      }
+
+      if(q.type === 'text'){
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.className = 'inputText';
+        input.id = 'textAnswer';
+        input.placeholder = 'Напиши своя отговор тук...';
+        answerArea.appendChild(input);
+      }
+
+      if(q.type === 'match'){
+        q.pairs.forEach((pair, idx) => {
+          const row = document.createElement('div');
+          row.className = 'pairRow';
+
+          const left = document.createElement('div');
+          left.className = 'pairLabel';
+          left.textContent = pair.left;
+
+          const sel = document.createElement('select');
+          sel.dataset.index = idx;
+          const empty = document.createElement('option');
+          empty.value = '';
+          empty.textContent = 'Избери...';
+          sel.appendChild(empty);
+
+          q.rights.forEach(r => {
+            const o = document.createElement('option');
+            o.value = r;
+            o.textContent = r;
+            sel.appendChild(o);
+          });
+
+          row.appendChild(left);
+          row.appendChild(sel);
+          answerArea.appendChild(row);
+        });
+      }
+
+      if(q.type === 'group'){
+        q.items.forEach((item, idx) => {
+          const row = document.createElement('div');
+          row.className = 'groupRow';
+
+          const left = document.createElement('div');
+          left.className = 'groupLabel';
+          left.textContent = item.label;
+
+          const sel = document.createElement('select');
+          sel.dataset.index = idx;
+          const empty = document.createElement('option');
+          empty.value = '';
+          empty.textContent = 'Избери група...';
+          sel.appendChild(empty);
+          q.groups.forEach(g => {
+            const o = document.createElement('option');
+            o.value = g;
+            o.textContent = g;
+            sel.appendChild(o);
+          });
+
+          row.appendChild(left);
+          row.appendChild(sel);
+          answerArea.appendChild(row);
+        });
+      }
+
+      if(q.type === 'ordering'){
+        const list = document.createElement('div');
+        list.className = 'orderingList';
+        list.id = 'orderingList';
+
+        q.items.forEach((item) => {
+          const row = document.createElement('div');
+          row.className = 'orderItem';
+
+          const num = document.createElement('div');
+          num.className = 'orderNum';
+
+          const txt = document.createElement('div');
+          txt.style.flex = '1';
+          txt.textContent = item;
+
+          const up = document.createElement('button');
+          up.type = 'button';
+          up.className = 'moveBtn';
+          up.textContent = '↑';
+          up.onclick = () => {
+            const prev = row.previousElementSibling;
+            if(prev){ list.insertBefore(row, prev); refreshOrderNumbers(); }
+          };
+
+          const down = document.createElement('button');
+          down.type = 'button';
+          down.className = 'moveBtn';
+          down.textContent = '↓';
+          down.onclick = () => {
+            const next = row.nextElementSibling;
+            if(next){ list.insertBefore(next, row); refreshOrderNumbers(); }
+          };
+
+          row.appendChild(num);
+          row.appendChild(txt);
+          row.appendChild(up);
+          row.appendChild(down);
+          list.appendChild(row);
+        });
+
+        answerArea.appendChild(list);
+        refreshOrderNumbers();
+      }
+    }
+
+    function refreshOrderNumbers(){
+      document.querySelectorAll('.orderItem').forEach((item, i) => {
+        item.querySelector('.orderNum').textContent = i + 1;
+      });
+    }
+
+    function setFeedback(ok, text){
+      feedback.className = 'feedback show ' + (ok ? 'ok' : 'bad');
+      feedback.innerHTML = (ok ? '✅ ' : '❌ ') + text;
+    }
+
+    function markStep(){
+      if(gardenSteps[current]) gardenSteps[current].classList.add('done');
+    }
+
+    function checkAnswer(){
+      if(answered) return;
+      const q = questions[current];
+      let ok = false;
+
+      if(q.type === 'choice'){
+        const selected = document.querySelector('.option.selected');
+        if(!selected){
+          setFeedback(false, 'Моля, избери отговор.');
+          return;
+        }
+        ok = Number(selected.dataset.selected) === q.correct;
+      }
+
+      if(q.type === 'multi'){
+        const selected = [...document.querySelectorAll('.option.selected')].map(x => Number(x.dataset.index)).sort((a,b)=>a-b);
+        const correct = [...q.correct].sort((a,b)=>a-b);
+        ok = JSON.stringify(selected) === JSON.stringify(correct);
+      }
+
+      if(q.type === 'text'){
+        const val = normalize(document.getElementById('textAnswer').value);
+        if(!val){
+          setFeedback(false, 'Моля, напиши отговор.');
+          return;
+        }
+        ok = q.acceptable.some(ans => val.includes(normalize(ans)) || normalize(ans).includes(val));
+      }
+
+      if(q.type === 'match'){
+        const selects = [...answerArea.querySelectorAll('select')];
+        ok = selects.every((sel, i) => sel.value === q.pairs[i].right);
+      }
+
+      if(q.type === 'group'){
+        const selects = [...answerArea.querySelectorAll('select')];
+        ok = selects.every((sel, i) => sel.value === q.items[i].correct);
+      }
+
+      if(q.type === 'ordering'){
+        const currentOrder = [...document.querySelectorAll('.orderItem div:nth-child(2)')].map(x => x.textContent.trim());
+        ok = JSON.stringify(currentOrder) === JSON.stringify(q.correctOrder);
+      }
+
+      answered = true;
+
+      if(ok){
+        score++;
+        scoreEl.textContent = score;
+        markStep();
+        setFeedback(true, q.feedback);
+      } else {
+        setFeedback(false, 'Невярно. ' + q.feedback);
+      }
+
+      nextBtn.classList.remove('hidden');
+    }
+
+    function nextQuestion(){
+      current++;
+      renderQuestion();
+    }
+
+    function showResult(){
+      questionBox.style.display = 'none';
+      resultBox.style.display = 'block';
+
+      const finalScore = document.getElementById('finalScore');
+      const finalText = document.getElementById('finalText');
+
+      finalScore.textContent = `${score} / ${questions.length} точки`;
+
+      let text = '';
+      if(score >= 13){
+        text = 'Страхотно представяне! Твоето растение разцъфна напълно. Познаваш много добре текста.';
+      } else if(score >= 9){
+        text = 'Много добро представяне! Градината ти е почти напълно разцъфнала.';
+      } else if(score >= 6){
+        text = 'Добро начало! Има още какво да упражниш, за да разцъфне градината напълно.';
+      } else {
+        text = 'Нужни са още упражнения. Прочети текста отново и опитай пак.';
+      }
+      finalText.textContent = text;
+    }
+
+    function restartGame(){
+      current = 0;
+      score = 0;
+      answered = false;
+      scoreEl.textContent = '0';
+      currentEl.textContent = '1';
+      gardenSteps.forEach(s => s.classList.remove('done'));
+      questionBox.style.display = 'block';
+      resultBox.style.display = 'none';
+      renderQuestion();
+    }
+
+    checkBtn.addEventListener('click', checkAnswer);
+    nextBtn.addEventListener('click', nextQuestion);
+    restartBtn.addEventListener('click', restartGame);
+
+    renderQuestion();
+  </script>
+</body>
+</html>
